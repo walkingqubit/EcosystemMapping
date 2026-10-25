@@ -1,0 +1,645 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2575.7">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="en"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;title&gt;Mainframe Modernization Ecosystem 3D Visualization&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>html, body { margin: 0; padding: 0; overflow: hidden; height: 100%; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>body { background: #111; color: #eee; font-family: 'Segoe UI', Arial, sans-serif; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>#legend, #filters, #search, #sidepanel, #decom-toggle {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>position: absolute; z-index: 10; background: rgba(30,30,40,0.95); border-radius: 8px; box-shadow: 0 2px 12px #0008;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 12px; font-size: 15px; line-height: 1.5;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>#legend { left: 16px; bottom: 16px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>#filters { left: 16px; top: 16px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>#search { right: 16px; top: 16px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>#decom-toggle { right: 16px; bottom: 16px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>#sidepanel {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>right: 16px; top: 80px; width: 320px; min-height: 180px; display: none;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border: 2px solid #444; max-height: 60vh; overflow-y: auto;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>#tooltip {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>position: absolute; z-index: 20; pointer-events: none;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: rgba(40,40,60,0.98); color: #fff; padding: 7px 13px; border-radius: 6px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 15px; white-space: nowrap; border: 1px solid #888;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display: none;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.legend-shape { display: inline-block; width: 18px; height: 18px; vertical-align: middle; margin-right: 7px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.legend-mainframe { background: #d22; border-radius: 3px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.legend-app { background: #ff9800; border-radius: 50%; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.legend-micro { background: linear-gradient(135deg,#e6ff00 60%,#4caf50 100%); border-radius: 50%; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.legend-cloud { background: #2196f3; border-radius: 4px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.legend-gateway { background: #a259e6; clip-path: polygon(50% 0, 100% 100%, 0 100%); }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.legend-team { background: #bbb; border-radius: 50%; border: 3px solid #888; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.filter-checkbox { margin-right: 6px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.decom-on { color: #ff5252; font-weight: bold; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.decom-off { color: #aaa; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.sidepanel-title { font-size: 1.2em; font-weight: bold; margin-bottom: 8px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.sidepanel-label { color: #aaa; font-size: 0.97em; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.sidepanel-value { color: #fff; font-weight: 500; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.sidepanel-section { margin-bottom: 10px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.sidepanel-close { float: right; cursor: pointer; color: #aaa; font-size: 1.2em; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.impact-count { color: #ff5252; font-weight: bold; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.search-input { width: 180px; padding: 5px 8px; border-radius: 5px; border: 1px solid #444; background: #222; color: #fff; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.search-btn { padding: 5px 12px; border-radius: 5px; border: none; background: #2196f3; color: #fff; cursor: pointer; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.search-btn:hover { background: #1976d2; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>::selection { background: #2196f3; color: #fff; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="legend"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;b&gt;Legend&lt;/b&gt;&lt;br&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;span class="legend-shape legend-mainframe"&gt;&lt;/span&gt; Mainframe&lt;br&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;span class="legend-shape legend-app"&gt;&lt;/span&gt; Application&lt;br&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;span class="legend-shape legend-micro"&gt;&lt;/span&gt; Microservice&lt;br&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;span class="legend-shape legend-cloud"&gt;&lt;/span&gt; Cloud Service&lt;br&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;span class="legend-shape legend-gateway"&gt;&lt;/span&gt; Gateway&lt;br&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;span class="legend-shape legend-team"&gt;&lt;/span&gt; Team&lt;br&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;hr style="border:0;border-top:1px solid #333;"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;span style="color:#fff;"&gt;Node size = # of connections&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="filters"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;b&gt;Filter Types&lt;/b&gt;&lt;br&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;label&gt;&lt;input type="checkbox" class="filter-checkbox" data-type="MAINFRAME" checked&gt; Mainframe&lt;/label&gt;&lt;br&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;label&gt;&lt;input type="checkbox" class="filter-checkbox" data-type="APPLICATION" checked&gt; Application&lt;/label&gt;&lt;br&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;label&gt;&lt;input type="checkbox" class="filter-checkbox" data-type="MICROSERVICE" checked&gt; Microservice&lt;/label&gt;&lt;br&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;label&gt;&lt;input type="checkbox" class="filter-checkbox" data-type="CLOUD_SERVICE" checked&gt; Cloud Service&lt;/label&gt;&lt;br&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;label&gt;&lt;input type="checkbox" class="filter-checkbox" data-type="GATEWAY" checked&gt; Gateway&lt;/label&gt;&lt;br&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;label&gt;&lt;input type="checkbox" class="filter-checkbox" data-type="TEAM" checked&gt; Team&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="search"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;input id="search-input" class="search-input" type="text" placeholder="Search node name..."&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button id="search-btn" class="search-btn"&gt;Go&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="decom-toggle"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;input type="checkbox" id="decom-mode"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;span id="decom-label" class="decom-off"&gt;What-If Decommission Mode&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="sidepanel"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="tooltip"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;script src="https://cdn.jsdelivr.net/npm/three@0.134.0/build/three.min.js"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/controls/OrbitControls.js"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// --- Data Generation (60+ nodes, 100+ edges, 6 types, all inline) ---</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// Node types: MAINFRAME, APPLICATION, MICROSERVICE, CLOUD_SERVICE, GATEWAY, TEAM</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// Cloud types: AWS, Azure, GCP, Private</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// Each node: id, name, type, status, cloud, team, riskScore, dependencies (ids)</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// Each edge: source, target</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// --- Node Data ---</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const nodes = [</p>
+<p class="p1"><span class="Apple-converted-space">      </span>// Mainframes (center)</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{id: 'mf1', name: 'Mainframe Alpha', type: 'MAINFRAME', status: 'Active', cloud: 'Private', team: 'Ops', riskScore: 8.7, dependencies: []},</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{id: 'mf2', name: 'Mainframe Beta', type: 'MAINFRAME', status: 'Active', cloud: 'Private', team: 'Ops', riskScore: 7.9, dependencies: []},</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{id: 'mf3', name: 'Mainframe Gamma', type: 'MAINFRAME', status: 'Active', cloud: 'Private', team: 'Ops', riskScore: 9.2, dependencies: []},</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{id: 'mf4', name: 'Mainframe Delta', type: 'MAINFRAME', status: 'Active', cloud: 'Private', team: 'Ops', riskScore: 8.1, dependencies: []},</p>
+<p class="p1"><span class="Apple-converted-space">      </span>// Applications (mid-ring)</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{id: 'app1', name: 'Claims App', type: 'APPLICATION', status: 'Modernizing', cloud: 'AWS', team: 'Claims', riskScore: 6.2, dependencies: ['mf1']},</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{id: 'app2', name: 'Billing App', type: 'APPLICATION', status: 'Active', cloud: 'Azure', team: 'Billing', riskScore: 5.8, dependencies: ['mf2']},</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{id: 'app3', name: 'Customer Portal', type: 'APPLICATION', status: 'Active', cloud: 'GCP', team: 'Customer', riskScore: 7.1, dependencies: ['mf1','mf3']},</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{id: 'app4', name: 'Policy Admin', type: 'APPLICATION', status: 'Modernizing', cloud: 'AWS', team: 'Policy', riskScore: 6.7, dependencies: ['mf4']},</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{id: 'app5', name: 'Analytics App', type: 'APPLICATION', status: 'Active', cloud: 'Azure', team: 'Analytics', riskScore: 5.5, dependencies: ['mf2','mf3']},</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{id: 'app6', name: 'Payments App', type: 'APPLICATION', status: 'Active', cloud: 'AWS', team: 'Payments', riskScore: 6.0, dependencies: ['mf1']},</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{id: 'app7', name: 'HR App', type: 'APPLICATION', status: 'Active', cloud: 'GCP', team: 'HR', riskScore: 5.2, dependencies: ['mf4']},</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{id: 'app8', name: 'Audit App', type: 'APPLICATION', status: 'Active', cloud: 'Azure', team: 'Audit', riskScore: 6.3, dependencies: ['mf3']},</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{id: 'app9', name: 'Support App', type: 'APPLICATION', status: 'Active', cloud: 'AWS', team: 'Support', riskScore: 5.9, dependencies: ['mf2']},</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{id: 'app10', name: 'Risk App', type: 'APPLICATION', status: 'Modernizing', cloud: 'GCP', team: 'Risk', riskScore: 7.5, dependencies: ['mf1','mf4']},</p>
+<p class="p1"><span class="Apple-converted-space">      </span>// Microservices (outer ring)</p>
+<p class="p1"><span class="Apple-converted-space">      </span>...Array.from({length: 18}, (_,i) =&gt; ({</p>
+<p class="p1"><span class="Apple-converted-space">        </span>id: `ms${i+1}`,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>name: `Microservice ${String.fromCharCode(65+i)}`,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>type: 'MICROSERVICE',</p>
+<p class="p1"><span class="Apple-converted-space">        </span>status: 'Active',</p>
+<p class="p1"><span class="Apple-converted-space">        </span>cloud: ['AWS','Azure','GCP','Private'][i%4],</p>
+<p class="p1"><span class="Apple-converted-space">        </span>team: ['Claims','Billing','Customer','Policy','Analytics','Payments','HR','Audit','Support','Risk'][i%10],</p>
+<p class="p1"><span class="Apple-converted-space">        </span>riskScore: +(Math.random()*3+3.5).toFixed(1),</p>
+<p class="p1"><span class="Apple-converted-space">        </span>dependencies: [`app${(i%10)+1}`]</p>
+<p class="p1"><span class="Apple-converted-space">      </span>})),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>// Cloud Services (AWS, Azure, GCP, Private, directional clusters)</p>
+<p class="p1"><span class="Apple-converted-space">      </span>...Array.from({length: 16}, (_,i) =&gt; ({</p>
+<p class="p1"><span class="Apple-converted-space">        </span>id: `cs${i+1}`,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>name: `CloudSvc ${['AWS','Azure','GCP','Private'][i%4]}-${i+1}`,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>type: 'CLOUD_SERVICE',</p>
+<p class="p1"><span class="Apple-converted-space">        </span>status: 'Active',</p>
+<p class="p1"><span class="Apple-converted-space">        </span>cloud: ['AWS','Azure','GCP','Private'][i%4],</p>
+<p class="p1"><span class="Apple-converted-space">        </span>team: ['CloudOps','CloudOps','CloudOps','CloudOps'][i%4],</p>
+<p class="p1"><span class="Apple-converted-space">        </span>riskScore: +(Math.random()*2+2.5).toFixed(1),</p>
+<p class="p1"><span class="Apple-converted-space">        </span>dependencies: [`ms${(i%18)+1}`]</p>
+<p class="p1"><span class="Apple-converted-space">      </span>})),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>// Gateways (bridging)</p>
+<p class="p1"><span class="Apple-converted-space">      </span>...Array.from({length: 7}, (_,i) =&gt; ({</p>
+<p class="p1"><span class="Apple-converted-space">        </span>id: `gw${i+1}`,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>name: `Gateway ${i+1}`,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>type: 'GATEWAY',</p>
+<p class="p1"><span class="Apple-converted-space">        </span>status: 'Active',</p>
+<p class="p1"><span class="Apple-converted-space">        </span>cloud: ['AWS','Azure','GCP','Private'][i%4],</p>
+<p class="p1"><span class="Apple-converted-space">        </span>team: 'Infra',</p>
+<p class="p1"><span class="Apple-converted-space">        </span>riskScore: +(Math.random()*2+4.5).toFixed(1),</p>
+<p class="p1"><span class="Apple-converted-space">        </span>dependencies: [`app${(i%10)+1}`]</p>
+<p class="p1"><span class="Apple-converted-space">      </span>})),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>// Teams (floating above)</p>
+<p class="p1"><span class="Apple-converted-space">      </span>...[</p>
+<p class="p1"><span class="Apple-converted-space">        </span>{id:'team1', name:'Team Claims', type:'TEAM', status:'Active', cloud:'-', team:'Claims', riskScore:3.0, dependencies:[]},</p>
+<p class="p1"><span class="Apple-converted-space">        </span>{id:'team2', name:'Team Billing', type:'TEAM', status:'Active', cloud:'-', team:'Billing', riskScore:2.8, dependencies:[]},</p>
+<p class="p1"><span class="Apple-converted-space">        </span>{id:'team3', name:'Team Customer', type:'TEAM', status:'Active', cloud:'-', team:'Customer', riskScore:3.2, dependencies:[]},</p>
+<p class="p1"><span class="Apple-converted-space">        </span>{id:'team4', name:'Team Policy', type:'TEAM', status:'Active', cloud:'-', team:'Policy', riskScore:2.9, dependencies:[]},</p>
+<p class="p1"><span class="Apple-converted-space">        </span>{id:'team5', name:'Team Analytics', type:'TEAM', status:'Active', cloud:'-', team:'Analytics', riskScore:3.1, dependencies:[]},</p>
+<p class="p1"><span class="Apple-converted-space">        </span>{id:'team6', name:'Team Payments', type:'TEAM', status:'Active', cloud:'-', team:'Payments', riskScore:2.7, dependencies:[]},</p>
+<p class="p1"><span class="Apple-converted-space">        </span>{id:'team7', name:'Team HR', type:'TEAM', status:'Active', cloud:'-', team:'HR', riskScore:2.6, dependencies:[]},</p>
+<p class="p1"><span class="Apple-converted-space">        </span>{id:'team8', name:'Team Audit', type:'TEAM', status:'Active', cloud:'-', team:'Audit', riskScore:3.3, dependencies:[]},</p>
+<p class="p1"><span class="Apple-converted-space">        </span>{id:'team9', name:'Team Support', type:'TEAM', status:'Active', cloud:'-', team:'Support', riskScore:2.5, dependencies:[]},</p>
+<p class="p1"><span class="Apple-converted-space">        </span>{id:'team10', name:'Team Risk', type:'TEAM', status:'Active', cloud:'-', team:'Risk', riskScore:3.4, dependencies:[]},</p>
+<p class="p1"><span class="Apple-converted-space">        </span>{id:'team11', name:'Team CloudOps', type:'TEAM', status:'Active', cloud:'-', team:'CloudOps', riskScore:2.9, dependencies:[]},</p>
+<p class="p1"><span class="Apple-converted-space">        </span>{id:'team12', name:'Team Infra', type:'TEAM', status:'Active', cloud:'-', team:'Infra', riskScore:3.0, dependencies:[]}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>]</p>
+<p class="p1"><span class="Apple-converted-space">    </span>];</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// --- Edge Data (100+ edges, animated) ---</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const edges = [</p>
+<p class="p1"><span class="Apple-converted-space">      </span>// Mainframe to Application</p>
+<p class="p1"><span class="Apple-converted-space">      </span>...nodes.filter(n=&gt;n.type==='APPLICATION').flatMap(app =&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>app.dependencies.map(dep =&gt; ({source: dep, target: app.id}))</p>
+<p class="p1"><span class="Apple-converted-space">      </span>),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>// Application to Microservice</p>
+<p class="p1"><span class="Apple-converted-space">      </span>...nodes.filter(n=&gt;n.type==='MICROSERVICE').map(ms =&gt; ({</p>
+<p class="p1"><span class="Apple-converted-space">        </span>source: ms.dependencies[0], target: ms.id</p>
+<p class="p1"><span class="Apple-converted-space">      </span>})),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>// Microservice to Cloud Service</p>
+<p class="p1"><span class="Apple-converted-space">      </span>...nodes.filter(n=&gt;n.type==='CLOUD_SERVICE').map(cs =&gt; ({</p>
+<p class="p1"><span class="Apple-converted-space">        </span>source: cs.dependencies[0], target: cs.id</p>
+<p class="p1"><span class="Apple-converted-space">      </span>})),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>// Application to Gateway</p>
+<p class="p1"><span class="Apple-converted-space">      </span>...nodes.filter(n=&gt;n.type==='GATEWAY').map(gw =&gt; ({</p>
+<p class="p1"><span class="Apple-converted-space">        </span>source: gw.dependencies[0], target: gw.id</p>
+<p class="p1"><span class="Apple-converted-space">      </span>})),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>// Application to Team</p>
+<p class="p1"><span class="Apple-converted-space">      </span>...nodes.filter(n=&gt;n.type==='APPLICATION').map(app =&gt; ({</p>
+<p class="p1"><span class="Apple-converted-space">        </span>source: app.id, target: nodes.find(n=&gt;n.type==='TEAM' &amp;&amp; n.team===app.team)?.id || 'team1'</p>
+<p class="p1"><span class="Apple-converted-space">      </span>})),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>// Microservice to Team</p>
+<p class="p1"><span class="Apple-converted-space">      </span>...nodes.filter(n=&gt;n.type==='MICROSERVICE').map(ms =&gt; ({</p>
+<p class="p1"><span class="Apple-converted-space">        </span>source: ms.id, target: nodes.find(n=&gt;n.type==='TEAM' &amp;&amp; n.team===ms.team)?.id || 'team1'</p>
+<p class="p1"><span class="Apple-converted-space">      </span>})),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>// Cloud Service to Team</p>
+<p class="p1"><span class="Apple-converted-space">      </span>...nodes.filter(n=&gt;n.type==='CLOUD_SERVICE').map(cs =&gt; ({</p>
+<p class="p1"><span class="Apple-converted-space">        </span>source: cs.id, target: nodes.find(n=&gt;n.type==='TEAM' &amp;&amp; n.team==='CloudOps')?.id || 'team11'</p>
+<p class="p1"><span class="Apple-converted-space">      </span>})),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>// Gateway to Team</p>
+<p class="p1"><span class="Apple-converted-space">      </span>...nodes.filter(n=&gt;n.type==='GATEWAY').map(gw =&gt; ({</p>
+<p class="p1"><span class="Apple-converted-space">        </span>source: gw.id, target: nodes.find(n=&gt;n.type==='TEAM' &amp;&amp; n.team==='Infra')?.id || 'team12'</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}))</p>
+<p class="p1"><span class="Apple-converted-space">    </span>];</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// --- Compute node degrees for sizing ---</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const nodeDegree = {};</p>
+<p class="p1"><span class="Apple-converted-space">    </span>edges.forEach(e =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>nodeDegree[e.source] = (nodeDegree[e.source]||0)+1;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>nodeDegree[e.target] = (nodeDegree[e.target]||0)+1;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// --- 3D Layout: assign positions ---</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// Mainframes: center cluster</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// Applications: mid ring</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// Gateways: bridging between apps and clouds</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// Cloud Services: 4 directional clusters (AWS, Azure, GCP, Private)</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// Microservices: outer ring</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// Teams: floating above</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>const nodePos = {};</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const center = new THREE.Vector3(0,0,0);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// Mainframes</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const mfNodes = nodes.filter(n=&gt;n.type==='MAINFRAME');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>mfNodes.forEach((n,i) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>nodePos[n.id] = new THREE.Vector3(</p>
+<p class="p1"><span class="Apple-converted-space">        </span>Math.cos(i/mfNodes.length*2*Math.PI)*18,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>0,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>Math.sin(i/mfNodes.length*2*Math.PI)*18</p>
+<p class="p1"><span class="Apple-converted-space">      </span>);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// Applications</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const appNodes = nodes.filter(n=&gt;n.type==='APPLICATION');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>appNodes.forEach((n,i) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>nodePos[n.id] = new THREE.Vector3(</p>
+<p class="p1"><span class="Apple-converted-space">        </span>Math.cos(i/appNodes.length*2*Math.PI)*32,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>0,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>Math.sin(i/appNodes.length*2*Math.PI)*32</p>
+<p class="p1"><span class="Apple-converted-space">      </span>);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// Microservices</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const msNodes = nodes.filter(n=&gt;n.type==='MICROSERVICE');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>msNodes.forEach((n,i) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>nodePos[n.id] = new THREE.Vector3(</p>
+<p class="p1"><span class="Apple-converted-space">        </span>Math.cos(i/msNodes.length*2*Math.PI)*48,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>Math.sin(i/msNodes.length*2*Math.PI)*8,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>Math.sin(i/msNodes.length*2*Math.PI)*48</p>
+<p class="p1"><span class="Apple-converted-space">      </span>);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// Cloud Services: 4 clusters</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const csNodes = nodes.filter(n=&gt;n.type==='CLOUD_SERVICE');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const cloudDirs = {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>'AWS': new THREE.Vector3(60,10,0),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>'Azure': new THREE.Vector3(-60,10,0),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>'GCP': new THREE.Vector3(0,10,60),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>'Private': new THREE.Vector3(0,10,-60)</p>
+<p class="p1"><span class="Apple-converted-space">    </span>};</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let csClusterIdx = {AWS:0,Azure:0,GCP:0,Private:0};</p>
+<p class="p1"><span class="Apple-converted-space">    </span>csNodes.forEach((n,i) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const dir = cloudDirs[n.cloud];</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const idx = csClusterIdx[n.cloud]++;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const angle = idx/(csNodes.length/4)*2*Math.PI;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>nodePos[n.id] = dir.clone().add(new THREE.Vector3(</p>
+<p class="p1"><span class="Apple-converted-space">        </span>Math.cos(angle)*10,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>Math.sin(angle)*6,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>Math.sin(angle)*10</p>
+<p class="p1"><span class="Apple-converted-space">      </span>));</p>
+<p class="p1"><span class="Apple-converted-space">    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// Gateways: between apps and clouds</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const gwNodes = nodes.filter(n=&gt;n.type==='GATEWAY');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>gwNodes.forEach((n,i) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>nodePos[n.id] = new THREE.Vector3(</p>
+<p class="p1"><span class="Apple-converted-space">        </span>Math.cos(i/gwNodes.length*2*Math.PI)*40,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>8,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>Math.sin(i/gwNodes.length*2*Math.PI)*40</p>
+<p class="p1"><span class="Apple-converted-space">      </span>);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// Teams: floating above</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const teamNodes = nodes.filter(n=&gt;n.type==='TEAM');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>teamNodes.forEach((n,i) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>nodePos[n.id] = new THREE.Vector3(</p>
+<p class="p1"><span class="Apple-converted-space">        </span>Math.cos(i/teamNodes.length*2*Math.PI)*28,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>32 + Math.sin(i/teamNodes.length*2*Math.PI)*8,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>Math.sin(i/teamNodes.length*2*Math.PI)*28</p>
+<p class="p1"><span class="Apple-converted-space">      </span>);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// --- Three.js Scene Setup ---</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let scene, camera, renderer, controls, raycaster, mouse;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let nodeMeshes = {}, edgeMeshes = [], edgeAnimOffsets = [];</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let visibleTypes = new Set(['MAINFRAME','APPLICATION','MICROSERVICE','CLOUD_SERVICE','GATEWAY','TEAM']);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let decomMode = false, decomMainframe = null, decomImpacted = new Set();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function nodeColor(n) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>switch(n.type) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>case 'MAINFRAME': return 0xd22a2a;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>case 'APPLICATION': return 0xff9800;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>case 'MICROSERVICE': return 0x9be600;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>case 'CLOUD_SERVICE': return 0x2196f3;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>case 'GATEWAY': return 0xa259e6;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>case 'TEAM': return 0xbbbbbb;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>return 0xffffff;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>function nodeMaterial(n, highlight=false) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>let color = nodeColor(n);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (decomMode &amp;&amp; decomImpacted.has(n.id)) color = 0xff5252;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>return new THREE.MeshPhongMaterial({</p>
+<p class="p1"><span class="Apple-converted-space">        </span>color,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>emissive: highlight ? 0x333333 : 0x111111,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>shininess: 60,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>transparent: n.type==='TEAM',</p>
+<p class="p1"><span class="Apple-converted-space">        </span>opacity: n.type==='TEAM' ? 0.85 : 1.0</p>
+<p class="p1"><span class="Apple-converted-space">      </span>});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>function nodeGeometry(n, size) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>switch(n.type) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>case 'MAINFRAME': return new THREE.BoxGeometry(size*1.5, size*1.1, size*1.1);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>case 'APPLICATION': return new THREE.SphereGeometry(size, 24, 18);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>case 'MICROSERVICE': return new THREE.SphereGeometry(size*0.7, 18, 12);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>case 'CLOUD_SERVICE': return new THREE.CylinderGeometry(size*0.7, size*0.7, size*2.1, 18);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>case 'GATEWAY': return new THREE.ConeGeometry(size*0.9, size*2.0, 18);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>case 'TEAM': return new THREE.TorusGeometry(size*1.1, size*0.35, 12, 32);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>return new THREE.SphereGeometry(size, 16, 12);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function getNodeSize(n) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>// Scale by degree, min 2.5, max 7.5</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const deg = nodeDegree[n.id]||1;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>return Math.max(2.5, Math.min(7.5, 2.5 + deg*0.7));</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function createNodeMesh(n) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const size = getNodeSize(n);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const geom = nodeGeometry(n, size);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const mat = nodeMaterial(n);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const mesh = new THREE.Mesh(geom, mat);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>mesh.position.copy(nodePos[n.id]);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>mesh.userData = {node: n};</p>
+<p class="p1"><span class="Apple-converted-space">      </span>mesh.castShadow = true;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>mesh.receiveShadow = true;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>return mesh;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function createEdgeMesh(src, tgt, idx) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>// Animated dashed line</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const points = [nodePos[src].clone(), nodePos[tgt].clone()];</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const curve = new THREE.CatmullRomCurve3(points);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const geom = new THREE.TubeGeometry(curve, 16, 0.45, 8, false);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const mat = new THREE.MeshBasicMaterial({</p>
+<p class="p1"><span class="Apple-converted-space">        </span>color: 0xffffff,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>transparent: true,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>opacity: 0.45,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>wireframe: false</p>
+<p class="p1"><span class="Apple-converted-space">      </span>});</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const mesh = new THREE.Mesh(geom, mat);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>mesh.userData = {src, tgt, idx};</p>
+<p class="p1"><span class="Apple-converted-space">      </span>return mesh;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function createAnimatedDashLine(src, tgt, idx) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>// Use Line2 for dashes, fallback to animated opacity</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const mat = new THREE.LineDashedMaterial({</p>
+<p class="p1"><span class="Apple-converted-space">        </span>color: 0xffffff,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>dashSize: 3,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>gapSize: 2,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>linewidth: 2,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>transparent: true,</p>
+<p class="p1"><span class="Apple-converted-space">        </span>opacity: 0.7</p>
+<p class="p1"><span class="Apple-converted-space">      </span>});</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const geom = new THREE.BufferGeometry().setFromPoints([</p>
+<p class="p1"><span class="Apple-converted-space">        </span>nodePos[src].clone(), nodePos[tgt].clone()</p>
+<p class="p1"><span class="Apple-converted-space">      </span>]);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const line = new THREE.Line(geom, mat);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>line.computeLineDistances();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>line.userData = {src, tgt, idx};</p>
+<p class="p1"><span class="Apple-converted-space">      </span>return line;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function createStarfield() {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const starGeo = new THREE.BufferGeometry();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const starCount = 1200;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const positions = [];</p>
+<p class="p1"><span class="Apple-converted-space">      </span>for (let i=0; i&lt;starCount; ++i) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const r = 300 + Math.random()*200;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const theta = Math.random()*2*Math.PI;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const phi = Math.acos(2*Math.random()-1);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>positions.push(</p>
+<p class="p1"><span class="Apple-converted-space">          </span>Math.sin(phi)*Math.cos(theta)*r,</p>
+<p class="p1"><span class="Apple-converted-space">          </span>Math.sin(phi)*Math.sin(theta)*r,</p>
+<p class="p1"><span class="Apple-converted-space">          </span>Math.cos(phi)*r</p>
+<p class="p1"><span class="Apple-converted-space">        </span>);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>starGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions,3));</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const starMat = new THREE.PointsMaterial({color:0xffffff, size:1.2, sizeAttenuation:true, transparent:true, opacity:0.7});</p>
+<p class="p1"><span class="Apple-converted-space">      </span>return new THREE.Points(starGeo, starMat);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function buildScene() {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>scene = new THREE.Scene();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>scene.background = new THREE.Color(0x11131a);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>scene.add(createStarfield());</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// Lighting</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const amb = new THREE.AmbientLight(0xffffff, 0.38);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>scene.add(amb);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const dir = new THREE.DirectionalLight(0xffffff, 0.65);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>dir.position.set(80,120,60);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>dir.castShadow = true;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>scene.add(dir);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// Nodes</p>
+<p class="p1"><span class="Apple-converted-space">      </span>nodeMeshes = {};</p>
+<p class="p1"><span class="Apple-converted-space">      </span>nodes.forEach(n =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (!visibleTypes.has(n.type)) return;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const mesh = createNodeMesh(n);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>scene.add(mesh);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>nodeMeshes[n.id] = mesh;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// Edges</p>
+<p class="p1"><span class="Apple-converted-space">      </span>edgeMeshes = [];</p>
+<p class="p1"><span class="Apple-converted-space">      </span>edgeAnimOffsets = [];</p>
+<p class="p1"><span class="Apple-converted-space">      </span>edges.forEach((e,idx) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (!nodeMeshes[e.source] || !nodeMeshes[e.target]) return;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const line = createAnimatedDashLine(e.source, e.target, idx);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>scene.add(line);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>edgeMeshes.push(line);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>edgeAnimOffsets.push(Math.random()*10);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function updateNodeVisibility() {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>Object.values(nodeMeshes).forEach(mesh =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const n = mesh.userData.node;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>mesh.visible = visibleTypes.has(n.type);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>});</p>
+<p class="p1"><span class="Apple-converted-space">      </span>edgeMeshes.forEach(line =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const src = line.userData.src, tgt = line.userData.tgt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>line.visible = nodeMeshes[src]?.visible &amp;&amp; nodeMeshes[tgt]?.visible;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function updateNodeMaterials() {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>Object.values(nodeMeshes).forEach(mesh =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const n = mesh.userData.node;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>mesh.material = nodeMaterial(n, mesh.userData.highlight);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function highlightNode(id, highlight=true) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>Object.values(nodeMeshes).forEach(mesh =&gt; mesh.userData.highlight = false);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (id &amp;&amp; nodeMeshes[id]) nodeMeshes[id].userData.highlight = highlight;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>updateNodeMaterials();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function animateEdges(time) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>edgeMeshes.forEach((line,idx) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Animate dash offset</p>
+<p class="p1"><span class="Apple-converted-space">        </span>line.material.dashOffset = -0.03*(time/16 + edgeAnimOffsets[idx]);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>line.material.needsUpdate = true;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function resize() {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const w = window.innerWidth, h = window.innerHeight;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>camera.aspect = w/h;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>camera.updateProjectionMatrix();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>renderer.setSize(w,h);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function flyToNode(id) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (!nodeMeshes[id]) return;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const pos = nodeMeshes[id].position.clone();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const camTarget = pos.clone().add(new THREE.Vector3(0,8,18));</p>
+<p class="p1"><span class="Apple-converted-space">      </span>// Animate camera</p>
+<p class="p1"><span class="Apple-converted-space">      </span>let t = 0, start = camera.position.clone(), end = camTarget;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>let anim = () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>t += 0.04;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>camera.position.lerpVectors(start, end, Math.min(1,t));</p>
+<p class="p1"><span class="Apple-converted-space">        </span>controls.target.lerpVectors(controls.target, pos, Math.min(1,t));</p>
+<p class="p1"><span class="Apple-converted-space">        </span>controls.update();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (t&lt;1) requestAnimationFrame(anim);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>};</p>
+<p class="p1"><span class="Apple-converted-space">      </span>anim();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// --- Raycasting for hover/click ---</p>
+<p class="p1"><span class="Apple-converted-space">    </span>function getIntersectedNode(mx,my) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const rect = renderer.domElement.getBoundingClientRect();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>mouse.x = ((mx-rect.left)/rect.width)*2-1;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>mouse.y = -((my-rect.top)/rect.height)*2+1;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>raycaster.setFromCamera(mouse, camera);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const intersects = raycaster.intersectObjects(Object.values(nodeMeshes).filter(m=&gt;m.visible), false);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (intersects.length&gt;0) return intersects[0].object.userData.node;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>return null;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// --- Tooltip and Sidepanel ---</p>
+<p class="p1"><span class="Apple-converted-space">    </span>function showTooltip(mx,my, node) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const tip = document.getElementById('tooltip');</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (!node) { tip.style.display='none'; return; }</p>
+<p class="p1"><span class="Apple-converted-space">      </span>tip.innerHTML = `&lt;b&gt;${node.name}&lt;/b&gt;&lt;br&gt;&lt;span style="color:#aaa;"&gt;${node.type.replace('_',' ')}&lt;/span&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>tip.style.left = (mx+18)+'px';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>tip.style.top = (my+8)+'px';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>tip.style.display = 'block';</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>function hideTooltip() {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('tooltip').style.display = 'none';</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>function showSidepanel(node, impactCount=0) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const panel = document.getElementById('sidepanel');</p>
+<p class="p1"><span class="Apple-converted-space">      </span>panel.innerHTML = `</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;span class="sidepanel-close" onclick="document.getElementById('sidepanel').style.display='none';"&gt;&amp;times;&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="sidepanel-title"&gt;${node.name}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="sidepanel-section"&gt;&lt;span class="sidepanel-label"&gt;Type:&lt;/span&gt; &lt;span class="sidepanel-value"&gt;${node.type.replace('_',' ')}&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="sidepanel-section"&gt;&lt;span class="sidepanel-label"&gt;Status:&lt;/span&gt; &lt;span class="sidepanel-value"&gt;${node.status}&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="sidepanel-section"&gt;&lt;span class="sidepanel-label"&gt;Cloud:&lt;/span&gt; &lt;span class="sidepanel-value"&gt;${node.cloud}&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="sidepanel-section"&gt;&lt;span class="sidepanel-label"&gt;Team:&lt;/span&gt; &lt;span class="sidepanel-value"&gt;${node.team}&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="sidepanel-section"&gt;&lt;span class="sidepanel-label"&gt;Risk Score:&lt;/span&gt; &lt;span class="sidepanel-value"&gt;${node.riskScore}&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="sidepanel-section"&gt;&lt;span class="sidepanel-label"&gt;Dependencies:&lt;/span&gt; &lt;span class="sidepanel-value"&gt;${node.dependencies.length ? node.dependencies.join(', ') : 'None'}&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>${decomMode &amp;&amp; node.type==='MAINFRAME' ? `&lt;div class="sidepanel-section"&gt;&lt;span class="sidepanel-label"&gt;Decommission Impact:&lt;/span&gt; &lt;span class="impact-count"&gt;${impactCount} node(s)&lt;/span&gt;&lt;/div&gt;` : ''}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>`;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>panel.style.display = 'block';</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// --- Decommission Mode ---</p>
+<p class="p1"><span class="Apple-converted-space">    </span>function computeDecomImpact(mainframeId) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>// BFS from mainframe, collect all dependent nodes</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const impacted = new Set();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const queue = [mainframeId];</p>
+<p class="p1"><span class="Apple-converted-space">      </span>while (queue.length) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const curr = queue.shift();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>edges.forEach(e =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>if (e.source===curr &amp;&amp; !impacted.has(e.target)) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>impacted.add(e.target);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>queue.push(e.target);</p>
+<p class="p1"><span class="Apple-converted-space">          </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>});</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>return impacted;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// --- Main ---</p>
+<p class="p1"><span class="Apple-converted-space">    </span>function main() {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>// Renderer</p>
+<p class="p1"><span class="Apple-converted-space">      </span>renderer = new THREE.WebGLRenderer({antialias:true});</p>
+<p class="p1"><span class="Apple-converted-space">      </span>renderer.setClearColor(0x11131a);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>renderer.setSize(window.innerWidth, window.innerHeight);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>renderer.shadowMap.enabled = true;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.body.appendChild(renderer.domElement);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// Camera &amp; Controls</p>
+<p class="p1"><span class="Apple-converted-space">      </span>camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 2000);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>camera.position.set(0, 60, 120);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>controls = new THREE.OrbitControls(camera, renderer.domElement);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>controls.enableDamping = true;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>controls.dampingFactor = 0.13;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>controls.minDistance = 30;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>controls.maxDistance = 400;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>controls.target.set(0,0,0);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>raycaster = new THREE.Raycaster();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>mouse = new THREE.Vector2();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>buildScene();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// Events</p>
+<p class="p1"><span class="Apple-converted-space">      </span>window.addEventListener('resize', resize);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>renderer.domElement.addEventListener('mousemove', onMouseMove);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>renderer.domElement.addEventListener('click', onMouseClick);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// Filter checkboxes</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.querySelectorAll('.filter-checkbox').forEach(cb =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>cb.addEventListener('change', e =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>visibleTypes = new Set(Array.from(document.querySelectorAll('.filter-checkbox')).filter(c=&gt;c.checked).map(c=&gt;c.dataset.type));</p>
+<p class="p1"><span class="Apple-converted-space">          </span>buildScene();</p>
+<p class="p1"><span class="Apple-converted-space">          </span>updateNodeVisibility();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>});</p>
+<p class="p1"><span class="Apple-converted-space">      </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// Search</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('search-btn').onclick = () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const val = document.getElementById('search-input').value.trim().toLowerCase();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (!val) return;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const found = nodes.find(n=&gt;n.name.toLowerCase().includes(val));</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (found &amp;&amp; nodeMeshes[found.id]) {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>flyToNode(found.id);</p>
+<p class="p1"><span class="Apple-converted-space">          </span>highlightNode(found.id, true);</p>
+<p class="p1"><span class="Apple-converted-space">          </span>setTimeout(()=&gt;highlightNode(null), 1800);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// Decommission mode</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('decom-mode').addEventListener('change', e =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>decomMode = e.target.checked;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>decomMainframe = null;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>decomImpacted = new Set();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>document.getElementById('decom-label').className = decomMode ? 'decom-on' : 'decom-off';</p>
+<p class="p1"><span class="Apple-converted-space">        </span>updateNodeMaterials();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>document.getElementById('sidepanel').style.display = 'none';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>animate();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>let lastHoverNode = null;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>function onMouseMove(e) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const node = getIntersectedNode(e.clientX, e.clientY);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (node !== lastHoverNode) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>highlightNode(node?.id);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>showTooltip(e.clientX, e.clientY, node);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>lastHoverNode = node;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>function onMouseClick(e) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const node = getIntersectedNode(e.clientX, e.clientY);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (!node) return;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (decomMode &amp;&amp; node.type==='MAINFRAME') {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>decomMainframe = node.id;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>decomImpacted = computeDecomImpact(node.id);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>updateNodeMaterials();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>showSidepanel(node, decomImpacted.size);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>showSidepanel(node);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function animate(time=0) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>requestAnimationFrame(animate);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>controls.update();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>animateEdges(time);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>renderer.render(scene, camera);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>main();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
