@@ -12,7 +12,7 @@
   #filters{left:16px;top:16px}
   #search{right:16px;top:16px}
   #decom{right:16px;bottom:16px}
-  #side{right:16px;top:90px;width:300px;display:none;max-height:60vh;overflow-y:auto;border:2px solid #444}
+  #side{right:16px;top:90px;width:320px;display:none;max-height:65vh;overflow-y:auto;border:2px solid #444}
   #tip{position:absolute;z-index:20;pointer-events:none;display:none;background:rgba(40,40,60,.98);
     padding:6px 12px;border-radius:6px;border:1px solid #888;white-space:nowrap}
   .sw{display:inline-block;width:14px;height:14px;vertical-align:middle;margin-right:6px;border-radius:3px}
@@ -20,6 +20,9 @@
   button{padding:5px 12px;border:none;border-radius:5px;background:#2196f3;color:#fff;cursor:pointer}
   #err{position:absolute;inset:0;display:none;align-items:center;justify-content:center;
     color:#f66;font-size:18px;z-index:99}
+  .down{color:#ff5252;font-weight:bold}
+  .up{color:#ffa726;font-weight:bold}
+  .mini{color:#aaa;font-size:.9em}
 </style>
 </head>
 <body>
@@ -41,6 +44,7 @@
 
 <div id="decom" class="panel">
   <label><input type="checkbox" id="decomBox"> <b id="decomLbl" style="color:#aaa">What-If Decommission Mode</b></label>
+  <div class="mini" id="decomHint" style="display:none">Click any node: red = breaks downstream, orange = loses upstream</div>
 </div>
 
 <div id="legend" class="panel"><b>Legend</b><br>
@@ -49,7 +53,10 @@
   <span class="sw" style="background:#9be600;border-radius:50%"></span>Microservice<br>
   <span class="sw" style="background:#2196f3"></span>Cloud Service<br>
   <span class="sw" style="background:#a259e6"></span>Gateway<br>
-  <span class="sw" style="background:#bbb;border-radius:50%"></span>Team
+  <span class="sw" style="background:#bbb;border-radius:50%"></span>Team<br>
+  <hr style="border:0;border-top:1px solid #333">
+  <span class="sw" style="background:#ff5252"></span>Downstream impact (breaks)<br>
+  <span class="sw" style="background:#ffa726"></span>Upstream impact (loses feed)
 </div>
 
 <div id="side" class="panel"></div>
@@ -88,7 +95,7 @@ const edges=[];
 nodes.forEach(n=>n.deps.forEach(d=>edges.push({s:d,t:n.id})));
 nodes.filter(n=>n.type==='APPLICATION'||n.type==='MICROSERVICE')
   .forEach(n=>{const t=nodes.find(x=>x.type==='TEAM'&&x.team===n.team);if(t)edges.push({s:n.id,t:t.id});});
-nodes.filter(n=>['CLOUD_SERVICE'].includes(n.type)).forEach(n=>edges.push({s:n.id,t:'team11'}));
+nodes.filter(n=>n.type==='CLOUD_SERVICE').forEach(n=>edges.push({s:n.id,t:'team11'}));
 nodes.filter(n=>n.type==='GATEWAY').forEach(n=>edges.push({s:n.id,t:'team12'}));
 
 /* ---------- LAYOUT ---------- */
@@ -111,6 +118,7 @@ nodes.filter(n=>n.type==='CLOUD_SERVICE').forEach(n=>{
 /* ---------- SCENE ---------- */
 const COLORS={MAINFRAME:0xd22a2a,APPLICATION:0xff9800,MICROSERVICE:0x9be600,
   CLOUD_SERVICE:0x2196f3,GATEWAY:0xa259e6,TEAM:0xbbbbbb};
+const DOWN=0xff5252, UP=0xffa726;
 const deg={};edges.forEach(e=>{deg[e.s]=(deg[e.s]||0)+1;deg[e.t]=(deg[e.t]||0)+1;});
 const size=n=>Math.max(2.2,Math.min(7,2.2+(deg[n.id]||1)*.55));
 const geo=n=>{
@@ -141,13 +149,11 @@ const lines=edges.map(e=>{
   const l=new THREE.Line(g,new THREE.LineBasicMaterial({color:0x88aaff,transparent:true,opacity:.35}));
   l.userData=e;scene.add(l);return l;
 });
-// moving pulse dots along edges
-const pulses=edges.map((e,i)=>{
+const pulses=edges.map(e=>{
   const s=new THREE.Mesh(new THREE.SphereGeometry(.7,8,6),
     new THREE.MeshBasicMaterial({color:0x66ccff,transparent:true,opacity:.9}));
   s.userData={e,off:Math.random()};scene.add(s);return s;
 });
-// starfield
 (function(){const g=new THREE.BufferGeometry(),p=[];
   for(let i=0;i<1000;i++){const r=300+Math.random()*200,t=Math.random()*Math.PI*2,
     ph=Math.acos(2*Math.random()-1);
@@ -158,19 +164,59 @@ const pulses=edges.map((e,i)=>{
 
 /* ---------- STATE ---------- */
 const visible=new Set(['MAINFRAME','APPLICATION','MICROSERVICE','CLOUD_SERVICE','GATEWAY','TEAM']);
-let decom=false,impacted=new Set(),hovered=null;
+let decom=false,downSet=new Set(),upSet=new Set(),hovered=null,decomTarget=null;
+
+/* ---------- IMPACT TRAVERSAL (bidirectional) ---------- */
+function computeDownstream(id){
+  // BFS following outgoing edges: everything that depends on this node
+  const out=new Set();const q=[id];
+  while(q.length){const c=q.shift();
+    edges.forEach(e=>{if(e.s===c&&!out.has(e.t)&&e.t!==id){out.add(e.t);q.push(e.t);}});}
+  return out;
+}
+function computeUpstream(id){
+  // BFS following incoming edges: everything that feeds this node
+  const up=new Set();const q=[id];
+  while(q.length){const c=q.shift();
+    edges.forEach(e=>{if(e.t===c&&!up.has(e.s)&&e.s!==id){up.add(e.s);q.push(e.s);}});}
+  return up;
+}
 
 function refresh(){
   Object.values(meshes).forEach(m=>{
     const n=m.userData.n;
     m.visible=visible.has(n.type);
     let c=COLORS[n.type];
-    if(decom&&impacted.has(n.id))c=0xff5252;
+    if(decom&&downSet.has(n.id))c=DOWN;
+    else if(decom&&upSet.has(n.id))c=UP;
     if(m===hovered)c=0xffffff;
     m.material.color.setHex(c);
   });
-  lines.forEach(l=>{l.visible=meshes[l.userData.s].visible&&meshes[l.userData.t].visible;});
-  pulses.forEach(p=>{p.visible=lines[edges.indexOf(p.userData.e)].visible;});
+  lines.forEach(l=>{
+    const e=l.userData;
+    l.visible=meshes[e.s].visible&&meshes[e.t].visible;
+    // highlight edges involved in the impact paths
+    if(decom&&decomTarget){
+      if(downSet.has(e.t)&&(e.s===decomTarget||downSet.has(e.s))){
+        l.material.color.setHex(DOWN);l.material.opacity=.8;
+      } else if(upSet.has(e.s)&&(e.t===decomTarget||upSet.has(e.t))){
+        l.material.color.setHex(UP);l.material.opacity=.8;
+      } else {
+        l.material.color.setHex(0x88aaff);l.material.opacity=.15;
+      }
+    } else {
+      l.material.color.setHex(0x88aaff);l.material.opacity=.35;
+    }
+  });
+  pulses.forEach(p=>{
+    const e=p.userData.e;
+    p.visible=lines[edges.indexOf(e)].visible;
+    if(decom&&decomTarget){
+      if(downSet.has(e.t)&&(e.s===decomTarget||downSet.has(e.s)))p.material.color.setHex(DOWN);
+      else if(upSet.has(e.s)&&(e.t===decomTarget||upSet.has(e.t)))p.material.color.setHex(UP);
+      else p.material.color.setHex(0x66ccff);
+    } else p.material.color.setHex(0x66ccff);
+  });
 }
 
 /* ---------- INTERACTION ---------- */
@@ -191,21 +237,39 @@ addEventListener('mousemove',e=>{
 addEventListener('click',e=>{
   const m=pick(e.clientX,e.clientY);if(!m)return;
   const n=m.userData.n;
-  if(decom&&n.type==='MAINFRAME'){
-    impacted=new Set();const q=[n.id];
-    while(q.length){const c=q.shift();
-      edges.forEach(x=>{if(x.s===c&&!impacted.has(x.t)){impacted.add(x.t);q.push(x.t);}});}
-    document.getElementById('decomLbl').textContent='Impacted: '+impacted.size+' nodes';
+  if(decom){
+    // Bidirectional impact analysis on ANY node
+    decomTarget=n.id;
+    downSet=computeDownstream(n.id);
+    upSet=computeUpstream(n.id);
+    refresh();
+    showSide(n);
+  } else {
+    showSide(n);
   }
+});
+
+function showSide(n){
   const side=document.getElementById('side');
-  side.innerHTML='<span style="float:right;cursor:pointer" onclick="this.parentNode.style.display=\'none\'">&times;</span>'
+  const downList=downSet.size?[...downSet].map(id=>meshes[id].userData.n.name).join(', '):'None';
+  const upList=upSet.size?[...upSet].map(id=>meshes[id].userData.n.name).join(', '):'None';
+  side.innerHTML=
+    '<span style="float:right;cursor:pointer" onclick="this.parentNode.style.display=\'none\'">&times;</span>'
     +'<b style="font-size:1.15em">'+n.name+'</b><br><br>'
     +'Type: '+n.type.replace('_',' ')+'<br>Cloud: '+n.cloud+'<br>Team: '+n.team
     +'<br>Risk: <b style="color:'+(n.risk>7?'#f55':'#9e6')+'">'+n.risk+'</b><br>'
-    +'Deps: '+(n.deps.length?n.deps.join(', '):'None')
-    +(decom&&n.type==='MAINFRAME'?'<br><br><b style="color:#f55">Decommission impact: '+impacted.size+' nodes</b>':'');
+    +'Direct deps: '+(n.deps.length?n.deps.join(', '):'None')
+    +(decom&&decomTarget===n.id
+      ?'<hr style="border:0;border-top:1px solid #333;margin:10px 0">'
+       +'<div class="down">⬇ Downstream impact: '+downSet.size+' node(s)</div>'
+       +'<div class="mini">'+downList+'</div><br>'
+       +'<div class="up">⬆ Upstream impact: '+upSet.size+' node(s)</div>'
+       +'<div class="mini">'+upList+'</div><br>'
+       +'<div class="mini">Total blast radius: <b style="color:#fff">'
+       +(downSet.size+upSet.size)+' node(s)</b></div>'
+      :'');
   side.style.display='block';
-});
+}
 
 document.querySelectorAll('#filters input').forEach(cb=>cb.addEventListener('change',()=>{
   document.querySelectorAll('#filters input').forEach(c=>
@@ -223,9 +287,11 @@ document.getElementById('go').onclick=()=>{
   hovered=meshes[n.id];refresh();setTimeout(()=>{hovered=null;refresh();},2000);
 };
 document.getElementById('decomBox').addEventListener('change',e=>{
-  decom=e.target.checked;impacted=new Set();
-  document.getElementById('decomLbl').textContent=decom?'Click a Mainframe...':'What-If Decommission Mode';
+  decom=e.target.checked;
+  downSet=new Set();upSet=new Set();decomTarget=null;
+  document.getElementById('decomLbl').textContent=decom?'Impact Mode — click any node':'What-If Decommission Mode';
   document.getElementById('decomLbl').style.color=decom?'#ff5252':'#aaa';
+  document.getElementById('decomHint').style.display=decom?'block':'none';
   refresh();
 });
 
@@ -245,7 +311,7 @@ addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;
   controls.update();
   pulses.forEach(p=>{const{e,off}=p.userData;
     p.position.lerpVectors(P[e.s],P[e.t],(t/3000+off)%1);});
-  lines.forEach((l,i)=>l.material.opacity=.25+.15*Math.sin(t/600+i));
+  lines.forEach((l,i)=>{if(!decom||!decomTarget)l.material.opacity=.25+.15*Math.sin(t/600+i);});
   renderer.render(scene,camera);
 })(0);
 refresh();
