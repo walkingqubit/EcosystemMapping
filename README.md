@@ -3,6 +3,8 @@
 An interactive 3D visualization of a mainframe modernization 
 ecosystem across multiple cloud environments (AWS, Azure, GCP, Private).
 
+Built with Three.js and vanilla JavaScript in a single HTML file — no frameworks, no build step, no dependencies beyond the Three.js CDN.
+
 ## 🚀 Live Demo
 [View the visualization](https://walkingqubit.github.io/EcosystemMapping/)
 
