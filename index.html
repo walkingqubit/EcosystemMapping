@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mainframe Modernization Ecosystem — 3D</title>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#11131a;color:#eee;
+    font-family:'Segoe UI',Arial,sans-serif}
+  .panel{position:absolute;z-index:10;background:rgba(30,30,40,.95);border-radius:8px;
+    padding:12px;font-size:14px;line-height:1.5;box-shadow:0 2px 12px #0008}
+  #legend{left:16px;bottom:16px}
+  #filters{left:16px;top:16px}
+  #search{right:16px;top:16px}
+  #decom{right:16px;bottom:16px}
+  #side{right:16px;top:90px;width:300px;display:none;max-height:60vh;overflow-y:auto;border:2px solid #444}
+  #tip{position:absolute;z-index:20;pointer-events:none;display:none;background:rgba(40,40,60,.98);
+    padding:6px 12px;border-radius:6px;border:1px solid #888;white-space:nowrap}
+  .sw{display:inline-block;width:14px;height:14px;vertical-align:middle;margin-right:6px;border-radius:3px}
+  input[type=text]{padding:5px 8px;border-radius:5px;border:1px solid #444;background:#222;color:#fff}
+  button{padding:5px 12px;border:none;border-radius:5px;background:#2196f3;color:#fff;cursor:pointer}
+  #err{position:absolute;inset:0;display:none;align-items:center;justify-content:center;
+    color:#f66;font-size:18px;z-index:99}
+</style>
+</head>
+<body>
+<div id="err">⚠️ Failed to load Three.js from CDN — check your connection and refresh.</div>
+
+<div id="filters" class="panel"><b>Filter Types</b><br>
+  <label><input type="checkbox" data-t="MAINFRAME" checked> Mainframe</label><br>
+  <label><input type="checkbox" data-t="APPLICATION" checked> Application</label><br>
+  <label><input type="checkbox" data-t="MICROSERVICE" checked> Microservice</label><br>
+  <label><input type="checkbox" data-t="CLOUD_SERVICE" checked> Cloud Service</label><br>
+  <label><input type="checkbox" data-t="GATEWAY" checked> Gateway</label><br>
+  <label><input type="checkbox" data-t="TEAM" checked> Team</label>
+</div>
+
+<div id="search" class="panel">
+  <input id="q" type="text" placeholder="Search node...">
+  <button id="go">Go</button>
+</div>
+
+<div id="decom" class="panel">
+  <label><input type="checkbox" id="decomBox"> <b id="decomLbl" style="color:#aaa">What-If Decommission Mode</b></label>
+</div>
+
+<div id="legend" class="panel"><b>Legend</b><br>
+  <span class="sw" style="background:#d22"></span>Mainframe<br>
+  <span class="sw" style="background:#ff9800;border-radius:50%"></span>Application<br>
+  <span class="sw" style="background:#9be600;border-radius:50%"></span>Microservice<br>
+  <span class="sw" style="background:#2196f3"></span>Cloud Service<br>
+  <span class="sw" style="background:#a259e6"></span>Gateway<br>
+  <span class="sw" style="background:#bbb;border-radius:50%"></span>Team
+</div>
+
+<div id="side" class="panel"></div>
+<div id="tip"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.134.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+if (!window.THREE) { document.getElementById('err').style.display='flex'; }
+else (function(){
+
+/* ---------- DATA ---------- */
+const CLOUDS=['AWS','Azure','GCP','Private'];
+const TEAMS=['Claims','Billing','Customer','Policy','Analytics','Payments','HR','Audit','Support','Risk'];
+const nodes=[
+  ...['Alpha','Beta','Gamma','Delta'].map((n,i)=>({id:'mf'+(i+1),name:'Mainframe '+n,type:'MAINFRAME',
+    cloud:'Private',team:'Ops',risk:+(8+Math.random()).toFixed(1),deps:[]})),
+  ...['Claims App','Billing App','Customer Portal','Policy Admin','Analytics App','Payments App',
+      'HR App','Audit App','Support App','Risk App'].map((n,i)=>({id:'app'+(i+1),name:n,type:'APPLICATION',
+    cloud:CLOUDS[i%4],team:TEAMS[i],risk:+(5+Math.random()*2.5).toFixed(1),
+    deps:['mf'+((i%4)+1),'mf'+(((i+2)%4)+1)]})),
+  ...Array.from({length:18},(_,i)=>({id:'ms'+(i+1),name:'Microservice '+String.fromCharCode(65+i),
+    type:'MICROSERVICE',cloud:CLOUDS[i%4],team:TEAMS[i%10],risk:+(3.5+Math.random()*3).toFixed(1),
+    deps:['app'+((i%10)+1)]})),
+  ...Array.from({length:16},(_,i)=>({id:'cs'+(i+1),name:'CloudSvc '+CLOUDS[i%4]+'-'+(i+1),
+    type:'CLOUD_SERVICE',cloud:CLOUDS[i%4],team:'CloudOps',risk:+(2.5+Math.random()*2).toFixed(1),
+    deps:['ms'+((i%18)+1)]})),
+  ...Array.from({length:7},(_,i)=>({id:'gw'+(i+1),name:'Gateway '+(i+1),type:'GATEWAY',
+    cloud:CLOUDS[i%4],team:'Infra',risk:+(4.5+Math.random()*2).toFixed(1),deps:['app'+((i%10)+1)]})),
+  ...TEAMS.map((t,i)=>({id:'team'+(i+1),name:'Team '+t,type:'TEAM',cloud:'-',team:t,
+    risk:+(2.5+Math.random()).toFixed(1),deps:[]})),
+  {id:'team11',name:'Team CloudOps',type:'TEAM',cloud:'-',team:'CloudOps',risk:2.9,deps:[]},
+  {id:'team12',name:'Team Infra',type:'TEAM',cloud:'-',team:'Infra',risk:3.0,deps:[]}
+];
+const edges=[];
+nodes.forEach(n=>n.deps.forEach(d=>edges.push({s:d,t:n.id})));
+nodes.filter(n=>n.type==='APPLICATION'||n.type==='MICROSERVICE')
+  .forEach(n=>{const t=nodes.find(x=>x.type==='TEAM'&&x.team===n.team);if(t)edges.push({s:n.id,t:t.id});});
+nodes.filter(n=>['CLOUD_SERVICE'].includes(n.type)).forEach(n=>edges.push({s:n.id,t:'team11'}));
+nodes.filter(n=>n.type==='GATEWAY').forEach(n=>edges.push({s:n.id,t:'team12'}));
+
+/* ---------- LAYOUT ---------- */
+const P={}, ring=(list,r,y,wob)=>list.forEach((n,i)=>{
+  const a=i/list.length*Math.PI*2;
+  P[n.id]=new THREE.Vector3(Math.cos(a)*r,y+(wob?Math.sin(a*3)*wob:0),Math.sin(a)*r);
+});
+ring(nodes.filter(n=>n.type==='MAINFRAME'),16,0);
+ring(nodes.filter(n=>n.type==='APPLICATION'),34,0);
+ring(nodes.filter(n=>n.type==='MICROSERVICE'),50,0,6);
+ring(nodes.filter(n=>n.type==='GATEWAY'),42,10);
+ring(nodes.filter(n=>n.type==='TEAM'),26,34,4);
+const dir={AWS:[60,12,0],Azure:[-60,12,0],GCP:[0,12,60],Private:[0,12,-60]};
+let ci={AWS:0,Azure:0,GCP:0,Private:0};
+nodes.filter(n=>n.type==='CLOUD_SERVICE').forEach(n=>{
+  const d=dir[n.cloud],k=ci[n.cloud]++,a=k*1.3;
+  P[n.id]=new THREE.Vector3(d[0]+Math.cos(a)*10,d[1]+Math.sin(k)*5,d[2]+Math.sin(a)*10);
+});
+
+/* ---------- SCENE ---------- */
+const COLORS={MAINFRAME:0xd22a2a,APPLICATION:0xff9800,MICROSERVICE:0x9be600,
+  CLOUD_SERVICE:0x2196f3,GATEWAY:0xa259e6,TEAM:0xbbbbbb};
+const deg={};edges.forEach(e=>{deg[e.s]=(deg[e.s]||0)+1;deg[e.t]=(deg[e.t]||0)+1;});
+const size=n=>Math.max(2.2,Math.min(7,2.2+(deg[n.id]||1)*.55));
+const geo=n=>{
+  const s=size(n);
+  switch(n.type){
+    case 'MAINFRAME':return new THREE.BoxGeometry(s*1.6,s*1.1,s*1.1);
+    case 'CLOUD_SERVICE':return new THREE.CylinderGeometry(s*.7,s*.7,s*2,16);
+    case 'GATEWAY':return new THREE.ConeGeometry(s*.9,s*2,16);
+    case 'TEAM':return new THREE.TorusGeometry(s*1.1,s*.35,10,24);
+    case 'MICROSERVICE':return new THREE.SphereGeometry(s*.7,16,12);
+    default:return new THREE.SphereGeometry(s,20,16);
+  }};
+const matOf=n=>new THREE.MeshPhongMaterial({color:COLORS[n.type],shininess:60,
+  transparent:n.type==='TEAM',opacity:n.type==='TEAM'?.85:1});
+
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x11131a);
+scene.add(new THREE.AmbientLight(0xffffff,.45));
+const dl=new THREE.DirectionalLight(0xffffff,.7);dl.position.set(80,120,60);scene.add(dl);
+
+const meshes={};
+nodes.forEach(n=>{
+  const m=new THREE.Mesh(geo(n),matOf(n));
+  m.position.copy(P[n.id]);m.userData.n=n;scene.add(m);meshes[n.id]=m;
+});
+const lines=edges.map(e=>{
+  const g=new THREE.BufferGeometry().setFromPoints([P[e.s],P[e.t]]);
+  const l=new THREE.Line(g,new THREE.LineBasicMaterial({color:0x88aaff,transparent:true,opacity:.35}));
+  l.userData=e;scene.add(l);return l;
+});
+// moving pulse dots along edges
+const pulses=edges.map((e,i)=>{
+  const s=new THREE.Mesh(new THREE.SphereGeometry(.7,8,6),
+    new THREE.MeshBasicMaterial({color:0x66ccff,transparent:true,opacity:.9}));
+  s.userData={e,off:Math.random()};scene.add(s);return s;
+});
+// starfield
+(function(){const g=new THREE.BufferGeometry(),p=[];
+  for(let i=0;i<1000;i++){const r=300+Math.random()*200,t=Math.random()*Math.PI*2,
+    ph=Math.acos(2*Math.random()-1);
+    p.push(Math.sin(ph)*Math.cos(t)*r,Math.sin(ph)*Math.sin(t)*r,Math.cos(ph)*r);}
+  g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));
+  scene.add(new THREE.Points(g,new THREE.PointsMaterial({color:0xffffff,size:1.1,transparent:true,opacity:.6})));
+})();
+
+/* ---------- STATE ---------- */
+const visible=new Set(['MAINFRAME','APPLICATION','MICROSERVICE','CLOUD_SERVICE','GATEWAY','TEAM']);
+let decom=false,impacted=new Set(),hovered=null;
+
+function refresh(){
+  Object.values(meshes).forEach(m=>{
+    const n=m.userData.n;
+    m.visible=visible.has(n.type);
+    let c=COLORS[n.type];
+    if(decom&&impacted.has(n.id))c=0xff5252;
+    if(m===hovered)c=0xffffff;
+    m.material.color.setHex(c);
+  });
+  lines.forEach(l=>{l.visible=meshes[l.userData.s].visible&&meshes[l.userData.t].visible;});
+  pulses.forEach(p=>{p.visible=lines[edges.indexOf(p.userData.e)].visible;});
+}
+
+/* ---------- INTERACTION ---------- */
+const ray=new THREE.Raycaster(),mv=new THREE.Vector2(),tip=document.getElementById('tip');
+function pick(x,y){
+  mv.x=(x/innerWidth)*2-1;mv.y=-(y/innerHeight)*2+1;
+  ray.setFromCamera(mv,camera);
+  const hit=ray.intersectObjects(Object.values(meshes).filter(m=>m.visible),false);
+  return hit.length?hit[0].object:null;
+}
+addEventListener('mousemove',e=>{
+  const m=pick(e.clientX,e.clientY),n=m?m.userData.n:null;
+  if(m!==hovered){hovered=m;refresh();}
+  if(n){tip.innerHTML='<b>'+n.name+'</b> — '+n.type.replace('_',' ');
+    tip.style.left=(e.clientX+16)+'px';tip.style.top=(e.clientY+8)+'px';tip.style.display='block';}
+  else tip.style.display='none';
+});
+addEventListener('click',e=>{
+  const m=pick(e.clientX,e.clientY);if(!m)return;
+  const n=m.userData.n;
+  if(decom&&n.type==='MAINFRAME'){
+    impacted=new Set();const q=[n.id];
+    while(q.length){const c=q.shift();
+      edges.forEach(x=>{if(x.s===c&&!impacted.has(x.t)){impacted.add(x.t);q.push(x.t);}});}
+    document.getElementById('decomLbl').textContent='Impacted: '+impacted.size+' nodes';
+  }
+  const side=document.getElementById('side');
+  side.innerHTML='<span style="float:right;cursor:pointer" onclick="this.parentNode.style.display=\'none\'">&times;</span>'
+    +'<b style="font-size:1.15em">'+n.name+'</b><br><br>'
+    +'Type: '+n.type.replace('_',' ')+'<br>Cloud: '+n.cloud+'<br>Team: '+n.team
+    +'<br>Risk: <b style="color:'+(n.risk>7?'#f55':'#9e6')+'">'+n.risk+'</b><br>'
+    +'Deps: '+(n.deps.length?n.deps.join(', '):'None')
+    +(decom&&n.type==='MAINFRAME'?'<br><br><b style="color:#f55">Decommission impact: '+impacted.size+' nodes</b>':'');
+  side.style.display='block';
+});
+
+document.querySelectorAll('#filters input').forEach(cb=>cb.addEventListener('change',()=>{
+  document.querySelectorAll('#filters input').forEach(c=>
+    c.checked?visible.add(c.dataset.t):visible.delete(c.dataset.t));
+  refresh();
+}));
+document.getElementById('go').onclick=()=>{
+  const v=document.getElementById('q').value.trim().toLowerCase();if(!v)return;
+  const n=nodes.find(n=>n.name.toLowerCase().includes(v));if(!n||!meshes[n.id])return;
+  const p=meshes[n.id].position,t0=performance.now(),c0=camera.position.clone(),g0=controls.target.clone();
+  (function fly(){const k=Math.min(1,(performance.now()-t0)/800);
+    camera.position.lerpVectors(c0,p.clone().add(new THREE.Vector3(0,10,25)),k);
+    controls.target.lerpVectors(g0,p,k);controls.update();
+    if(k<1)requestAnimationFrame(fly);})();
+  hovered=meshes[n.id];refresh();setTimeout(()=>{hovered=null;refresh();},2000);
+};
+document.getElementById('decomBox').addEventListener('change',e=>{
+  decom=e.target.checked;impacted=new Set();
+  document.getElementById('decomLbl').textContent=decom?'Click a Mainframe...':'What-If Decommission Mode';
+  document.getElementById('decomLbl').style.color=decom?'#ff5252':'#aaa';
+  refresh();
+});
+
+/* ---------- BOOT ---------- */
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(innerWidth,innerHeight);document.body.appendChild(renderer.domElement);
+const camera=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,.1,2000);
+camera.position.set(0,70,130);
+const controls=new THREE.OrbitControls(camera,renderer.domElement);
+controls.enableDamping=true;controls.dampingFactor=.12;
+controls.minDistance=30;controls.maxDistance=400;
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;
+  camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+
+(function loop(t){
+  requestAnimationFrame(loop);
+  controls.update();
+  pulses.forEach(p=>{const{e,off}=p.userData;
+    p.position.lerpVectors(P[e.s],P[e.t],(t/3000+off)%1);});
+  lines.forEach((l,i)=>l.material.opacity=.25+.15*Math.sin(t/600+i));
+  renderer.render(scene,camera);
+})(0);
+refresh();
+})();
+</script>
+</body>
+</html>
